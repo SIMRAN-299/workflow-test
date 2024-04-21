@@ -1,17 +1,20 @@
 name: Hello world workflow
 
-on: 
-  push: 
+on:
+  push:
     branches:
       - main
   pull_request:
     branches:
       - main
+
 jobs:
   hello:
     runs-on: ubuntu-latest
+
     steps:
-        - uses: actions/checkout@v2
-        - name: "hello-world"
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Hello world
         run: echo "Hello World"
-        shell: bash
