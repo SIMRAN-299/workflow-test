@@ -1,0 +1,53 @@
+name: Create Pull Request
+
+on:
+  push:
+    branches:
+      - main  # Define the branch where changes trigger this workflow
+
+jobs:
+  create-pull-request:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Make Changes
+        run: |
+          # Replace this with commands to make desired changes to the repository
+          echo "Hello, world!" > new-file.txt
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Create Branch
+        run: |
+          git checkout -b feature-branch
+          git add .
+          git commit -m "Add new file via GitHub Actions"
+
+      - name: Push Branch
+        run: |
+          git push origin feature-branch
+
+      - name: Create Pull Request
+        run: |
+          token=$(echo "${{ secrets.GITHUB_TOKEN }}")
+          base_branch="main"
+          head_branch="feature-branch"
+          title="Proposed Changes"
+          body="This pull request proposes changes automatically via GitHub Actions."
+
+          curl -X POST \
+            -H "Authorization: token $token" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "title": "'"$title"'",
+              "body": "'"$body"'",
+              "head": "'"$head_branch"'",
+              "base": "'"$base_branch"'"
+            }' \
+            "https://api.github.com/repos/${{ github.repository }}/pulls"
