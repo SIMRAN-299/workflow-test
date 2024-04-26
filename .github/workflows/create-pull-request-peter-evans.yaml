@@ -1,4 +1,4 @@
-name: Create Pull Request
+name: Peter Create Pull Request
 
 on:
   issue_comment:
