@@ -1,50 +1,50 @@
 name: Create Pull Request
-
 on:
-  push:
-    branches:
-      - main  # Adjust to the branch you want to trigger the workflow on
 
+
+  issue_comment:
+    types: [created]  # Trigger the workflow on new issue comments
 jobs:
   create_pull_request:
     runs-on: ubuntu-latest
-
+    env:
+      BRANCH_NAME: update_branch_5  # Define the branch name as an environment variable
     steps:
-      - name: Checkout source repository
+      - name: Checkout Repository
         uses: actions/checkout@v2
-
+      - name: Create New Branch
+        run: |
+          git checkout -b $BRANCH_NAME  # Use the environment variable for branch name
       - name: Make Changes
         run: |
-          # Make changes to the repository here
-          echo "Hello, world!" > new-file.txt
-
-      - name: Commit and Push Changes
+          echo "Hello, world 20!" > new-file.txt
+          
+      - name: Commit Changes
         run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
           git add .
           git commit -m "Add new-file.txt via GitHub Actions"
-          git push origin main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
-
+      - name: Push Changes to New Branch
+        run: |
+          git push origin $BRANCH_NAME  # Use the environment variable for branch name
       - name: Create Pull Request
+        id: create_pr
         run: |
           PR_TITLE="Propose changes from external repository"
-          PR_BODY="This pull request was created automatically from changes made in an external repository."
-          PR_HEAD="main"  # Branch where changes are coming from
+          PR_BODY="This pull request was created automatically from changes made in a new branch."
+          PR_HEAD="$BRANCH_NAME"  # Use the environment variable for branch name
           PR_BASE="main"  # Branch where changes will be merged into
-
-          curl -X POST \
+          response=$(curl -X POST \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Content-Type: application/json" \
-            -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-
+            -H "Accept: application/vnd.github.v3+json" \
             -d '{
               "title": "'"$PR_TITLE"'",
               "body": "'"$PR_BODY"'",
               "head": "'"$PR_HEAD"'",
               "base": "'"$PR_BASE"'"
             }' \
-            "https://api.github.com/repos/OWNER/REPO/pulls"
+            "https://api.github.com/repos/${{ github.repository }}/pulls")
+          echo "::set-output name=pull_request_number::$(echo "$response" | jq -r '.number')"
+     
