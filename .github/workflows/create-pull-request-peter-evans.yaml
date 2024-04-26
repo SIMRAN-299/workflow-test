@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Make changes to pull request
-        run: date +%s > report.txt
+        run: date +%s > report1.txt
 
       - name: Create Pull Request
         id: cpr
