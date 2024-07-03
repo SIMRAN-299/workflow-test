@@ -64,3 +64,4 @@ jobs:
             }' \
             "https://api.github.com/repos/${{ github.repository }}/pulls")
           echo "::set-output name=pull_request_number::$(echo "$response" | jq -r '.number')"
+
