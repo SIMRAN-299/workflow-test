@@ -18,7 +18,7 @@ jobs:
           git checkout -b $BRANCH_NAME  # Use the environment variable for branch name
       - name: Make Changes
         run: |
-          echo "Hello, world 20!" > new-file.txt
+          echo "Hello, world 10!" > new-file.txt
           
       - name: Commit Changes
         run: |
