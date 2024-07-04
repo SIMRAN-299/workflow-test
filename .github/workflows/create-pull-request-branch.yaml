@@ -12,8 +12,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-
-      - name: List Branches
+     
+     - name: List Branches
         id: list_branches
         run: |
           git fetch --all
@@ -24,7 +24,7 @@ jobs:
         run: |
           if git show-ref --quiet refs/heads/$BRANCH_NAME; then
             echo "Branch $BRANCH_NAME already exists."
-            git checkout $BRANCH_NAME
+            git branch $BRANCH_NAME
           else
             echo "Branch $BRANCH_NAME does not exist. Creating..."
             git checkout -b $BRANCH_NAME
@@ -33,20 +33,17 @@ jobs:
       - name: Make Changes
         run: |
           echo "Hello, world 20!" > new-file.txt
-
+          
       - name: Commit Changes
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
-          git add new-file.txt
+          git add .
           git commit -m "Add new-file.txt via GitHub Actions"
 
       - name: Push Changes to Branch
         run: |
           git push origin $BRANCH_NAME
-
-      - name: Install jq
-        run: sudo apt-get install -y jq
 
       - name: Create Pull Request
         id: create_pr
@@ -67,3 +64,4 @@ jobs:
             }' \
             "https://api.github.com/repos/${{ github.repository }}/pulls")
           echo "::set-output name=pull_request_number::$(echo "$response" | jq -r '.number')"
+
