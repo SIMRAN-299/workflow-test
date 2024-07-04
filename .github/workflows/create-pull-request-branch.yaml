@@ -8,7 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BRANCH_NAME: test_branch  # Define the branch name as an environment variable
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
